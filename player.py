@@ -55,7 +55,7 @@ def parseRecording(path):
         continue
       universe = packet['universe']
       data = b64decode(packet['dmx'])
-      packet = ArtNet.dmxPacket(universe, data, sequence_nr)
+      packet = ArtNet.dmxPacket(universe, data, 0)
       frame.append(packet)
 
     else:

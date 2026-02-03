@@ -6,11 +6,12 @@ After=network-online.target
 
 [Service]
 # Command to execute when the service is started
-ExecStart=/usr/bin/filebrowser -a 0.0.0.0 -r /boot/recordings -d /var/local/filebrowser.db"
+ExecStart=/usr/bin/filebrowser -a 0.0.0.0 -r /boot/recordings -d /var/local/filebrowser.db
 
 # Automatically restart the service if it crashes
 Restart=on-failure
 RestartSec=10
+User=filebrowser
 
 # Our service will notify systemd once it is up and running
 Type=notify
