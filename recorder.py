@@ -7,7 +7,6 @@ from base64 import encodebytes
 PORT = 6454
 OUTPUT_NAME = 'recording'
 
-
 soc=socket(AF_INET, SOCK_DGRAM)
 soc.bind(('',PORT))
 soc.settimeout(1)
@@ -22,13 +21,12 @@ try:
       id, opcode, version = unpack('!8sHH', packet[:12])
       item = {'id': encodebytes(id).decode(), 'opcode' : opcode, 'version' : version}
       if opcode == 0x0050:
-        id, opcode, version, seq, physical, sub_uni, net, length =  unpack('!8sHHBBBBH', message[0][:18])
+        id, opcode, version, seq, physical, universe, length =  unpack('!8sHHBBHH', message[0][:18])
         data = message[0][18:]
         extra = {
           'seq' : seq,
           'physical' : physical,
-          'sub' : sub_uni,
-          'net' : net,
+          'universe' : universe,
           'length' : length,
           'dmx' : encodebytes(data).decode()
         }
