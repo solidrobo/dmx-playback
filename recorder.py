@@ -1,10 +1,15 @@
+import json
+from datetime import datetime
 from socket import socket, AF_INET, SOCK_DGRAM
 from struct import unpack
-import json
 from base64 import encodebytes
 
+PORT = 6454
+OUTPUT_NAME = 'recording'
+
+
 soc=socket(AF_INET, SOCK_DGRAM)
-soc.bind(('',6454))
+soc.bind(('',PORT))
 soc.settimeout(1)
 
 messages = []
@@ -40,6 +45,7 @@ try:
       continue
 
 except KeyboardInterrupt:
-  with open('dump1.json','w') as f:
+  time = datetime.now().strftime("%Y%m%d%H%M%S")
+  with open(f'{OUTPUT_NAME}-{time}.json','w') as f:
     json.dump(messages, f)
   print('done')

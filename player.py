@@ -4,7 +4,7 @@ from base64 import b64decode
 from time import sleep
 import socket
 
-FILENAME = 'dump1.json'
+FILENAME = 'recording-20260203130920.json'
 IP = "2.255.255.255"
 PORT = 6454
 FRAME_RATE = 1/40
