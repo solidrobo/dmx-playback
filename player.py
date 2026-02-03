@@ -7,7 +7,7 @@ from argparse import ArgumentParser
 from glob import glob
 import socket
 
-IP = "255.255.255.255"
+IP = "2.255.255.255"
 FRAME_RATE = 1/40
 
 class ArtNet:
