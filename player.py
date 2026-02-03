@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 from json import load
-from struct import pack, unpack
+from struct import pack
 from base64 import b64decode
 from time import sleep
 from argparse import ArgumentParser
+from glob import glob
 import socket
 
 FILENAME = 'recording-20260203141716.json'
@@ -77,12 +78,23 @@ def playbackFrames(frames, framerate):
         sleep(framerate)
 
 if __name__ == '__main__':
-  print(f'loading {FILENAME}')
-  frames = parseRecording(FILENAME)
+  parser = ArgumentParser(description='Plays back .json format Art-Net DMX recordings')
+  parser.add_argument("-d", help="directory to load recordings from",
+                        dest="input_dir", default='./recordings')
+  args = parser.parse_args()
+
+  recordings = {}
+  for file in glob(f'{args.input_dir}/**/*.json',recursive=True):
+    print(f'loading {file}')
+    frames = parseRecording(file)
+    recordings[f'{file}'] = frames
   print('starting playback')
   try:
     while True:
-      playbackFrames(frames, FRAME_RATE)
+      for recording in recordings.keys():
+        print(f'playing {recording}')
+        playbackFrames(recordings[recording], FRAME_RATE)
+        print(f'done playing {recording}')
   except KeyboardInterrupt:
     pass
 
