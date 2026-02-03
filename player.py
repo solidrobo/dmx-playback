@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from json import load
 from struct import pack, unpack
 from base64 import b64decode

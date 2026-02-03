@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import json
 from datetime import datetime
 from socket import socket, AF_INET, SOCK_DGRAM
