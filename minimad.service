@@ -1,8 +1,8 @@
 [Unit]
 # Human readable name of the unit
 Description=MiniMAD service
-Wants=network.target
-After=network.target
+Requires=network-online.target
+After=network-online.target
 
 [Service]
 # Command to execute when the service is started
@@ -14,6 +14,7 @@ Environment=PYTHONUNBUFFERED=1
 
 # Automatically restart the service if it crashes
 Restart=on-failure
+RestartSec=10
 
 # Our service will notify systemd once it is up and running
 Type=notify

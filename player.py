@@ -7,9 +7,7 @@ from argparse import ArgumentParser
 from glob import glob
 import socket
 
-FILENAME = 'recording-20260203141716.json'
-
-IP = "2.255.255.255"
+IP = "255.255.255.255"
 FRAME_RATE = 1/40
 
 class ArtNet:
