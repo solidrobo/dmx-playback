@@ -1,8 +1,10 @@
 [Unit]
 Description=Kill minimad service according to time
-Requires=minimad-kill.service
+#Requires=minimad-kill.service
 [Timer]
 Unit=minimad-kill.service
-OnCalendar=*-*-* **:**:*5
+OnCalendar=*-*-* *:*:30
+Persitent=true
+AccuracySec=1
 [Install]
 WantedBy=timers.target

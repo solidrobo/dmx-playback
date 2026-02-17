@@ -4,7 +4,7 @@ Description=MiniMAD service
 Requires=network-online.target
 After=network-online.target
 
-Conflicts=minimad-kill.service
+#Conflicts=minimad-kill.service
 [Service]
 # Command to execute when the service is started
 ExecStart=/boot/app/player.py -d /boot/recordings
