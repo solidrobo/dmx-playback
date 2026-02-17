@@ -4,10 +4,11 @@ Description=MiniMAD service
 Requires=network-online.target
 After=network-online.target
 
+Conflicts=minimad-kill.service
 [Service]
 # Command to execute when the service is started
 ExecStart=/boot/app/player.py -d /boot/recordings
-
+Type=simple
 # Disable Python's buffering of STDOUT and STDERR, so that output from the
 # service shows up immediately in systemd's logs
 Environment=PYTHONUNBUFFERED=1
@@ -16,11 +17,7 @@ Environment=PYTHONUNBUFFERED=1
 Restart=on-failure
 RestartSec=10
 
-# Our service will notify systemd once it is up and running
-Type=notify
-
-# Use a dedicated user to run our service
-#User=python_demo_service
+SuccessExitStatus=124
 
 [Install]
 # Tell systemd to automatically start this service when the system boots

@@ -1,0 +1,8 @@
+[Unit]
+Description=Run minimad service according to time
+Requires=minimad.service
+[Timer]
+Unit=minimad.service
+OnCalendar=*-*-* **:**:*0
+[Install]
+WantedBy=timers.target

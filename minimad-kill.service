@@ -1,0 +1,9 @@
+[Unit]
+# Human readable name of the unit
+Description=MiniMAD killer service
+Conflicts=minimad.service
+
+[Service]
+# Command to execute when the service is started
+ExecStart=sleep infinity
+Type=simple

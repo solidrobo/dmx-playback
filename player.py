@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
 from json import load
-from struct import pack
+from struct import pack, unpack
 from base64 import b64decode
 from time import sleep
 from argparse import ArgumentParser
 from glob import glob
+from signal import signal, SIGTERM
+from sys import exit
 import socket
 
 IP = "2.255.255.255"
 FRAME_RATE = 1/40
+MAX_UNIVERSE = 26
 
 class ArtNet:
   VERSION = 14
@@ -23,7 +26,7 @@ class ArtNet:
     return pack('!8sHH', ArtNet.ID.encode(), op_code, ArtNet.VERSION)
 
   def syncPacket(aux=0):
-    header = ArtNet.header(ArtNet.Op.Sync) 
+    header = ArtNet.header(ArtNet.Op.Sync)
     return pack('!12sH', header, aux)
 
   def dmxPacket(universe, data, sequence=0, physical=0):
@@ -63,24 +66,48 @@ def parseRecording(path):
 
   return frames
 
+
+def killLeds():
+  with socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP) as sock:
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+    zero = b'\00'*512
+    global MAX_UNIVERSE
+    for i in range(0,MAX_UNIVERSE):
+      i = pack('!H', i)
+      i, *rest = unpack('H', i)
+      packet = ArtNet.dmxPacket(i, zero, 0)
+      sock.sendto(packet, (IP, ArtNet.PORT))
+
 def playbackFrames(frames, framerate):
   with socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP) as sock:
       sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
       for frame in frames:
         for universe in frame:
           sock.sendto(universe, (IP, ArtNet.PORT))
+          #sleep(1e-6)
         # send sync
         sync = ArtNet.syncPacket()
         sock.sendto(sync, (IP, ArtNet.PORT))
         # wait for next frame
         sleep(framerate)
 
+
+class GracefulKiller:
+  kill_now = False
+  def __init__(self):
+    signal(SIGTERM, self.exit_gracefully)
+
+  def exit_gracefully(self, signum, frame):
+    print(f'captured {signum}')
+    self.kill_now = True
+    raise KeyboardInterrupt
+
+
 if __name__ == '__main__':
   parser = ArgumentParser(description='Plays back .json format Art-Net DMX recordings')
   parser.add_argument("-d", help="directory to load recordings from",
                         dest="input_dir", default='./recordings')
   args = parser.parse_args()
-
   recordings = {}
   for file in glob(f'{args.input_dir}/**/*.json',recursive=True):
     print(f'loading {file}')
@@ -88,13 +115,18 @@ if __name__ == '__main__':
     recordings[f'{file}'] = frames
   print('starting playback')
   try:
-    while True:
+    killer = GracefulKiller()
+    while killer.kill_now == False:
       for recording in recordings.keys():
         print(f'playing {recording}')
         playbackFrames(recordings[recording], FRAME_RATE)
         print(f'done playing {recording}')
   except KeyboardInterrupt:
     pass
+  print('tuning off lights')
+
+  sleep(1)
+  killLeds()
 
   print('done')
 
